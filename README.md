@@ -1,5 +1,7 @@
 # AuthMe
 
+It an app from [Getting Started with Guardian](https://hexdocs.pm/guardian/tutorial-start.html) tutorial in Guardian Docs
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
