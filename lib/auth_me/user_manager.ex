@@ -3,10 +3,12 @@ defmodule AuthMe.UserManager do
   The UserManager context.
   """
 
-  import Ecto.Query, warn: false
+  import Ecto.Query, only: [from: 2]
   alias AuthMe.Repo
 
   alias AuthMe.UserManager.User
+
+  alias Argon2
 
   @doc """
   Returns the list of users.
@@ -100,5 +102,20 @@ defmodule AuthMe.UserManager do
   """
   def change_user(%User{} = user) do
     User.changeset(user, %{})
+  end
+
+  def authenticate_user(username, plain_text_password) do
+    query = from u in User, where: u.username == ^username
+    case Repo.one(query) do
+      nil ->
+        Argon2.no_user_verify()
+        {:error, :invalid_credentials}
+      user ->
+        if Argon2.verify_pass(plain_text_password, user.password) do
+          {:ok, user}
+        else
+          {:error, :invalid_credentials}
+        end
+    end
   end
 end
